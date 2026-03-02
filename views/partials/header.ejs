@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #333;
+      color: white;
+      padding: 1rem 2rem;
+    }
+    nav a {
+      color: white;
+      margin-right: 1rem;
+      text-decoration: none;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .user-info {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .user-info span {
+      margin-right: 1rem;
+    }
+    .user-info form {
+      display: inline;
+    }
+    .user-info button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/reports">Laporan</a>
+    </nav>
+    <div class="user-info">
+      <% if (locals.user) { %>
+        <span>Halo, <%= user.username %></span>
+        <form action="/logout" method="POST" style="display:inline">
+          <button type="submit">Logout</button>
+        </form>
+      <% } else { %>
+        <nav>
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+        </nav>
+      <% } %>
+    </div>
+  </header>
+  <main>

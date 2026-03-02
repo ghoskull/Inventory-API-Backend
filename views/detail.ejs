@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+
+<h1>Detail Item</h1>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Item Code</th>
+    <td><%= item.itemCode %></td>
+  </tr>
+  <tr>
+    <th>Nama Item</th>
+    <td><%= item.itemName %></td>
+  </tr>
+  <tr>
+    <th>Supplier</th>
+    <td><%= item.supplier %></td>
+  </tr>
+  <tr>
+    <th>Quantity</th>
+    <td><%= item.quantity %></td>
+  </tr>
+  <tr>
+    <th>Harga</th>
+    <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.unitPrice) %></td>
+  </tr>
+  <tr>
+    <th>Deskripsi</th>
+    <td><%= item.description || '-' %></td>
+  </tr>
+  <tr>
+    <th>Lokasi</th>
+    <td><%= item.location || '-' %></td>
+  </tr>
+  <tr>
+    <th>Dibuat</th>
+    <td><%= new Date(item.createdAt).toLocaleString('id-ID') %></td>
+  </tr>
+  <tr>
+    <th>Diupdate</th>
+    <td><%= new Date(item.updatedAt).toLocaleString('id-ID') %></td>
+  </tr>
+</table>
+
+<a href="/">Kembali</a>
+<a href="/items/<%= item.itemCode %>/edit">Edit</a>
+<form action="/items/<%= item.itemCode %>?_method=DELETE" method="POST" style="display:inline">
+  <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
+</form>
+
+<%- include('partials/footer') %>

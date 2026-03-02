@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<h1><%= item ? 'Edit Item' : 'Tambah Item Baru' %></h1>
+
+<form action="<%= item ? '/items/' + item.itemCode + '?_method=PUT' : '/items' %>" method="POST">
+  <div>
+    <label>Nama Item:</label>
+    <input type="text" name="itemName" value="<%= item ? item.itemName : '' %>" required>
+  </div>
+  <div>
+    <label>Supplier:</label>
+    <input type="text" name="supplier" value="<%= item ? item.supplier : '' %>" required>
+  </div>
+  <div>
+    <label>Quantity:</label>
+    <input type="number" name="quantity" value="<%= item ? item.quantity : '' %>" required min="0">
+  </div>
+  <div>
+    <label>Unit Price (Rp):</label>
+    <input type="number" name="unitPrice" value="<%= item ? item.unitPrice : '' %>" required min="0">
+  </div>
+  <div>
+    <label>Deskripsi:</label>
+    <textarea name="description"><%= item ? item.description : '' %></textarea>
+  </div>
+  <div>
+    <label>Lokasi:</label>
+    <input type="text" name="location" value="<%= item ? item.location : '' %>">
+  </div>
+  <button type="submit">Simpan</button>
+</form>
+
+<%- include('partials/footer') %>

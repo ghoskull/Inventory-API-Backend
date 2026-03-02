@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<h1>Daftar Item Inventory</h1>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr>
+      <th>Item Code</th>
+      <th>Nama Item</th>
+      <th>Supplier</th>
+      <th>Quantity</th>
+      <th>Harga</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% items.forEach(item => { %>
+    <tr>
+      <td><%= item.itemCode %></td>
+      <td><%= item.itemName %></td>
+      <td><%= item.supplier %></td>
+      <td><%= item.quantity %></td>
+      <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.unitPrice) %></td>
+      <td>
+        <a href="/items/<%= item.itemCode %>">Detail</a>
+        <a href="/items/<%= item.itemCode %>/edit">Edit</a>
+        <form action="/items/<%= item.itemCode %>?_method=DELETE" method="POST" style="display:inline">
+          <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<!-- Pagination -->
+<div style="margin-top: 20px;">
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="/?page=<%= i %>&limit=<%= limit %>" style="margin: 0 5px; <%= i === page ? 'font-weight:bold;' : '' %>">
+      <%= i %>
+    </a>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

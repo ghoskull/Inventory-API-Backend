@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+
+<h1>Laporan Inventory</h1>
+
+<section style="margin-bottom: 30px;">
+  <h2>Total Nilai per Supplier</h2>
+  <div id="supplier-report">Memuat...</div>
+</section>
+
+<section>
+  <h2>Item dengan Stok Rendah</h2>
+  <form id="threshold-form">
+    <label>Threshold: <input type="number" id="threshold" value="10" min="1"></label>
+    <button type="submit">Tampilkan</button>
+  </form>
+  <div id="lowstock-report">Memuat...</div>
+</section>
+
+<script>
+async function loadSupplierReport() {
+  const res = await fetch('/api/reports/total-value-by-supplier');
+  const data = await res.json();
+  let html = '<table border="1" cellpadding="8"><tr><th>Supplier</th><th>Total Nilai</th></tr>';
+  data.data.forEach(item => {
+    html += `<tr><td>${item._id}</td><td>${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.totalValue)}</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('supplier-report').innerHTML = html;
+}
+
+async function loadLowStock(threshold) {
+  const res = await fetch(`/api/reports/low-stock?threshold=${threshold}`);
+  const data = await res.json();
+  let html = '<table border="1" cellpadding="8"><tr><th>Item</th><th>Supplier</th><th>Stok</th></tr>';
+  data.data.forEach(item => {
+    html += `<tr><td>${item.itemName}</td><td>${item.supplier}</td><td>${item.quantity}</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('lowstock-report').innerHTML = html;
+}
+
+loadSupplierReport();
+loadLowStock(10);
+
+document.getElementById('threshold-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const threshold = document.getElementById('threshold').value;
+  loadLowStock(threshold);
+});
+</script>
+
+<%- include('partials/footer') %>
