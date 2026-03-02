@@ -43,9 +43,28 @@ router.get('/dashboard', authView, async (req, res) => {
   }
 });
 
-// Halaman laporan (publik)
+// Halaman laporan (publik) dengan fitur pencarian
 router.get('/reports', async (req, res) => {
-  res.render('reports', { user: req.user });
+  try {
+    const { search } = req.query;
+    let searchResults = [];
+    if (search && search.trim() !== '') {
+      const regex = new RegExp(search, 'i');
+      searchResults = await Item.find({
+        $or: [
+          { itemName: regex },
+          { itemCode: regex }
+        ]
+      }).limit(20);
+    }
+    res.render('reports', { 
+      user: req.user,
+      search,
+      searchResults
+    });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
 });
 
 // Halaman tambah item (hanya login)
@@ -129,7 +148,7 @@ router.delete('/items/:itemCode', authView, async (req, res) => {
 // Proses logout (POST)
 router.post('/logout', (req, res) => {
   res.clearCookie('token');
-  res.redirect('/'); // kembali ke halaman landing
+  res.redirect('/');
 });
 
 module.exports = router;

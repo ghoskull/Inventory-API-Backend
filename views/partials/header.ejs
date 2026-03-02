@@ -46,7 +46,12 @@
 <body>
   <header>
     <nav>
-      <a href="/dashboard">Dashboard</a>
+      <% if (!locals.user) { %>
+        <a href="/">Home</a>
+      <% } %>
+      <% if (locals.user) { %>
+        <a href="/dashboard">Dashboard</a>
+      <% } %>
       <a href="/reports">Laporan</a>
     </nav>
     <div class="user-info">

@@ -2,19 +2,54 @@
 
 <h1>Laporan Inventory</h1>
 
-<section style="margin-bottom: 30px;">
-  <h2>Total Nilai per Supplier</h2>
-  <div id="supplier-report">Memuat...</div>
-</section>
+<!-- Form Pencarian Item -->
+<h2>Cari Item</h2>
+<form method="GET" action="/reports">
+  <input type="text" name="search" placeholder="Masukkan nama atau kode item" value="<%= search || '' %>" style="padding: 8px; width: 300px;">
+  <button type="submit" style="padding: 8px 12px;">Cari</button>
+</form>
 
-<section>
-  <h2>Item dengan Stok Rendah</h2>
-  <form id="threshold-form">
-    <label>Threshold: <input type="number" id="threshold" value="10" min="1"></label>
-    <button type="submit">Tampilkan</button>
-  </form>
-  <div id="lowstock-report">Memuat...</div>
-</section>
+<% if (search && searchResults && searchResults.length > 0) { %>
+  <h3>Hasil Pencarian untuk "<%= search %>"</h3>
+  <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%; margin-top: 20px;">
+    <thead>
+      <tr>
+        <th>Item Code</th>
+        <th>Nama Item</th>
+        <th>Supplier</th>
+        <th>Stok</th>
+        <th>Harga</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% searchResults.forEach(item => { %>
+        <tr>
+          <td><%= item.itemCode %></td>
+          <td><%= item.itemName %></td>
+          <td><%= item.supplier %></td>
+          <td><%= item.quantity %></td>
+          <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.unitPrice) %></td>
+          <td>
+            <a href="/items/<%= item.itemCode %>">Detail</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } else if (search) { %>
+  <p>Tidak ada item ditemukan untuk "<%= search %>"</p>
+<% } %>
+
+<h2>Total Nilai per Supplier</h2>
+<div id="supplier-report"></div>
+
+<h2>Item dengan Stok Rendah</h2>
+<form id="threshold-form">
+  <label>Threshold: <input type="number" id="threshold" value="10" min="1"></label>
+  <button type="submit">Tampilkan</button>
+</form>
+<div id="lowstock-report"></div>
 
 <script>
 async function loadSupplierReport() {
