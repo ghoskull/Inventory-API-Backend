@@ -1,50 +1,133 @@
 <%- include('partials/header') %>
 
-<h1>Daftar Item Inventory</h1>
+<style>
+    .dashboard-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
+                    url('https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1974&auto=format&fit=crop'); 
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 40px 20px;
+        font-family: 'Inter', sans-serif;
+    }
 
-<!-- Tombol Tambah Item -->
-<div style="margin-bottom: 20px;">
-  <a href="/items/new" style="padding: 8px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">➕ Tambah Item Baru</a>
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    /* KONTINER PUTIH SOLID AGAR TEKS HITAM TERBACA */
+    .table-container {
+        background: #ffffff; 
+        border-radius: 20px;
+        padding: 25px;
+        overflow-x: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .sneaker-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #1e293b; /* Teks Hitam Slate */
+    }
+
+    .sneaker-table th {
+        text-align: left;
+        padding: 15px;
+        color: #64748b; /* Abu-abu gelap */
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .sneaker-table td {
+        padding: 18px 15px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* WARNA TEKS HITAM UNTUK DATA */
+    .item-name {
+        color: #0f172a; /* Hitam pekat */
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .item-code {
+        color: #0284c7; /* Biru tua */
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .supplier-text {
+        color: #334155; /* Abu-abu sangat gelap */
+        font-weight: 500;
+    }
+
+    .price-text {
+        color: #0f172a; /* Hitam pekat */
+        font-weight: 800;
+    }
+
+    .btn-add {
+        background: #38bdf8;
+        color: #0f172a;
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 800;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1 style="margin:0; font-size: 2.5rem; color: white;">Sneaker <span style="color: #38bdf8;">Stock</span></h1>
+                <p style="color: #cbd5e1; margin-top: 5px;">Manajemen inventori toko sepatu Anda.</p>
+            </div>
+            <a href="/items/new" class="btn-add">+ Tambah Sepatu Baru</a>
+        </div>
+
+        <div class="table-container">
+            <table class="sneaker-table">
+                <thead>
+                    <tr>
+                        <th>Informasi Produk</th>
+                        <th>Supplier</th>
+                        <th>Kuantitas</th>
+                        <th>Harga</th>
+                        <th style="text-align: right;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <div class="item-name"><%= item.itemName %></div>
+                                <div class="item-code"><%= item.itemCode %></div>
+                            </td>
+                            <td class="supplier-text"><%= item.supplier %></td>
+                            <td>
+                                <b style="color: <%= item.quantity <= 10 ? '#dc2626' : '#16a34a' %>; font-size: 1rem;">
+                                    <%= item.quantity %> PCS
+                                </b>
+                            </td>
+                            <td class="price-text">
+                                <%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.unitPrice) %>
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="/items/<%= item.itemCode %>" style="color: #0284c7; text-decoration: none; font-weight: 800;">Lihat Detail →</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-<table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr>
-      <th>Item Code</th>
-      <th>Nama Item</th>
-      <th>Supplier</th>
-      <th>Quantity</th>
-      <th>Harga</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% items.forEach(item => { %>
-    <tr>
-      <td><%= item.itemCode %></td>
-      <td><%= item.itemName %></td>
-      <td><%= item.supplier %></td>
-      <td><%= item.quantity %></td>
-      <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.unitPrice) %></td>
-      <td>
-        <a href="/items/<%= item.itemCode %>">Detail</a>
-        <a href="/items/<%= item.itemCode %>/edit">Edit</a>
-        <form action="/items/<%= item.itemCode %>?_method=DELETE" method="POST" style="display:inline">
-          <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
-        </form>
-      </td>
-    </tr>
-    <% }) %>
-  </tbody>
-</table>
-
-<!-- Pagination -->
-<div style="margin-top: 20px;">
-  <% for (let i = 1; i <= totalPages; i++) { %>
-    <a href="/dashboard?page=<%= i %>&limit=<%= limit %>" style="margin: 0 5px; <%= i === page ? 'font-weight:bold;' : '' %>">
-      <%= i %>
-    </a>
-  <% } %>
-</div>
-
 <%- include('partials/footer') %>

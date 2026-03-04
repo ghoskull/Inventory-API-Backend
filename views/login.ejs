@@ -1,40 +1,289 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
 
-<h1>Login</h1>
+<html lang="id">
 
-<form id="loginForm">
-  <div>
-    <label>Username:</label>
-    <input type="text" id="username" required>
-  </div>
-  <div>
-    <label>Password:</label>
-    <input type="password" id="password" required>
-  </div>
-  <button type="submit">Login</button>
-</form>
+<head>
 
-<p>Belum punya akun? <a href="/register">Register</a></p>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Login | Dashboard Toko Sepatu</title>
+
+  <style>
+
+    :root {
+
+      --primary: #2563eb;
+
+      --dark: #0f172a;
+
+      --accent: #38bdf8;
+
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family: 'Segoe UI', Roboto, sans-serif;
+
+      background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)),
+
+                  url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop');
+
+      background-size: cover;
+
+      background-position: center;
+
+      height: 100vh;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      color: white;
+
+    }
+
+    .login-card {
+
+      background: rgba(255, 255, 255, 0.1);
+
+      backdrop-filter: blur(12px);
+
+      padding: 40px;
+
+      border-radius: 24px;
+
+      border: 1px solid rgba(255, 255, 255, 0.2);
+
+      width: 100%;
+
+      max-width: 400px;
+
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+      text-align: center;
+
+    }
+
+    .logo-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+
+    h1 { font-size: 1.8rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
+
+    p.subtitle { color: #94a3b8; margin-bottom: 30px; font-size: 0.9rem; }
+
+   
+
+    .input-group { margin-bottom: 20px; text-align: left; }
+
+    label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #cbd5e1; }
+
+    input {
+
+      width: 100%;
+
+      padding: 12px 16px;
+
+      background: rgba(15, 23, 42, 0.6);
+
+      border: 1px solid #334155;
+
+      border-radius: 12px;
+
+      color: white;
+
+      box-sizing: border-box;
+
+      transition: all 0.3s;
+
+    }
+
+    input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+
+   
+
+    .btn-login {
+
+      width: 100%;
+
+      padding: 14px;
+
+      background: var(--primary);
+
+      color: white;
+
+      border: none;
+
+      border-radius: 12px;
+
+      font-weight: 600;
+
+      cursor: pointer;
+
+      margin-top: 10px;
+
+      transition: 0.3s;
+
+    }
+
+    .btn-login:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+   
+
+    .divider { margin: 25px 0; display: flex; align-items: center; color: #64748b; font-size: 0.8rem; }
+
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #334155; margin: 0 10px; }
+
+   
+
+    .google-btn {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 10px;
+
+      width: 100%;
+
+      padding: 12px;
+
+      background: white;
+
+      color: #1e293b;
+
+      text-decoration: none;
+
+      border-radius: 12px;
+
+      font-weight: 500;
+
+      transition: 0.3s;
+
+    }
+
+    .google-btn:hover { background: #f1f5f9; }
+
+    .footer-link { margin-top: 25px; font-size: 0.9rem; color: #94a3b8; }
+
+    .footer-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+  </style>
+
+</head>
+
+<body>
+
+
+
+<div class="login-card">
+
+  <span class="logo-icon">👟</span>
+
+  <h1>Dashboard Toko</h1>
+
+  <p class="subtitle">Sistem Manajemen Inventory Sepatu</p>
+
+
+
+  <form id="loginForm">
+
+    <div class="input-group">
+
+      <label>Username</label>
+
+      <input type="text" id="username" placeholder="Masukkan username..." required>
+
+    </div>
+
+    <div class="input-group">
+
+      <label>Password</label>
+
+      <input type="password" id="password" placeholder="••••••••" required>
+
+    </div>
+
+    <button type="submit" class="btn-login">Masuk ke Panel</button>
+
+  </form>
+
+
+
+  <div class="divider">atau</div>
+
+
+
+  <a href="/api/auth/google" class="google-btn">
+
+    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" alt="G">
+
+    Login dengan Google
+
+  </a>
+
+
+
+  <p class="footer-link">
+
+    Belum punya akses? <a href="/register">Daftar Akun</a>
+
+  </p>
+
+</div>
+
+
 
 <script>
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
+
   e.preventDefault();
+
   const username = document.getElementById('username').value;
+
   const password = document.getElementById('password').value;
 
+
+
   const res = await fetch('/api/auth/login', {
+
     method: 'POST',
+
     headers: { 'Content-Type': 'application/json' },
+
+    credentials: 'include',
+
     body: JSON.stringify({ username, password })
+
   });
 
+
+
   const data = await res.json();
+
   if (data.success) {
-    window.location.href = '/dashboard'; // redirect ke halaman utama
+
+    window.location.href = '/dashboard';
+
   } else {
+
     alert('Login gagal: ' + data.message);
+
   }
+
 });
+
 </script>
 
-<%- include('partials/footer') %>
+
+
+</body>
+
+</html>

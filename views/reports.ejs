@@ -1,86 +1,214 @@
 <%- include('partials/header') %>
 
-<h1>Laporan Inventory</h1>
+<style>
+    /* 1. Background & Wrapper Utama */
+    .report-page-wrapper {
+        min-height: 100vh;
+        /* Tetap pakai gambar sepatu yang keren untuk konsistensi tema */
+        background: linear-gradient(rgba(10, 15, 30, 0.85), rgba(10, 15, 30, 0.85)), 
+                    url('https://images.unsplash.com/photo-1552308995-2baac1ad5490?q=80&w=2070&auto=format&fit=crop'); 
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 40px 20px;
+        font-family: 'Inter', sans-serif;
+    }
 
-<!-- Form Pencarian Item -->
-<h2>Cari Item</h2>
-<form method="GET" action="/reports">
-  <input type="text" name="search" placeholder="Masukkan nama atau kode item" value="<%= search || '' %>" style="padding: 8px; width: 300px;">
-  <button type="submit" style="padding: 8px 12px;">Cari</button>
-</form>
+    .container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
 
-<% if (search && searchResults && searchResults.length > 0) { %>
-  <h3>Hasil Pencarian untuk "<%= search %>"</h3>
-  <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%; margin-top: 20px;">
-    <thead>
-      <tr>
-        <th>Item Code</th>
-        <th>Nama Item</th>
-        <th>Supplier</th>
-        <th>Stok</th>
-        <th>Harga</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% searchResults.forEach(item => { %>
-        <tr>
-          <td><%= item.itemCode %></td>
-          <td><%= item.itemName %></td>
-          <td><%= item.supplier %></td>
-          <td><%= item.quantity %></td>
-          <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.unitPrice) %></td>
-          <td>
-            <a href="/items/<%= item.itemCode %>">Detail</a>
-          </td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
-<% } else if (search) { %>
-  <p>Tidak ada item ditemukan untuk "<%= search %>"</p>
-<% } %>
+    /* 2. Kartu Putih Solid - Agar Tulisan Hitam Terbaca Jelas */
+    .search-section, .report-card {
+        background: #ffffff; /* Putih Solid */
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        color: #1e293b; /* Warna teks utama Hitam */
+    }
 
-<h2>Total Nilai per Supplier</h2>
-<div id="supplier-report"></div>
+    .search-input {
+        flex: 1;
+        padding: 12px 20px;
+        background: #f1f5f9;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        color: #0f172a; /* Teks input Hitam */
+        outline: none;
+    }
 
-<h2>Item dengan Stok Rendah</h2>
-<form id="threshold-form">
-  <label>Threshold: <input type="number" id="threshold" value="10" min="1"></label>
-  <button type="submit">Tampilkan</button>
-</form>
-<div id="lowstock-report"></div>
+    .btn-search {
+        padding: 12px 25px;
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    /* 3. Grid Layout */
+    .report-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    h1 { color: #ffffff; } /* Judul besar tetap putih karena di luar kartu */
+    h3 { color: #0f172a; margin-top: 0; font-weight: 800; } /* Judul kartu jadi Hitam */
+
+    /* 4. Tabel dengan Teks Hitam Kontras */
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .modern-table th {
+        text-align: left;
+        padding: 12px;
+        color: #64748b; /* Abu-abu gelap untuk header */
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .modern-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.95rem;
+        color: #1e293b; /* Teks data Hitam */
+    }
+
+    /* Warna Aksen agar tetap menarik */
+    .text-highlight { color: #0284c7; font-weight: 700; } /* Biru Tua */
+    .text-danger { color: #dc2626; font-weight: 800; } /* Merah */
+
+    @media (max-width: 850px) {
+        .report-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="report-page-wrapper">
+    <div class="container">
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 2.5rem; margin: 0;">Laporan <span style="color: #38bdf8;">Inventory</span></h1>
+            <p style="color: #38bdf8;">Data stok dan analisis aset toko sepatu Anda.</p>
+        </header>
+
+        <section class="search-section">
+            <h3 style="margin-bottom: 15px;">🔍 Cari Item Spesifik</h3>
+            <form method="GET" action="/reports" style="display: flex; gap: 15px;">
+                <input type="text" name="search" class="search-input" placeholder="Masukkan nama atau kode sepatu..." value="<%= search || '' %>">
+                <button type="submit" class="btn-search">Cari Sekarang</button>
+            </form>
+
+            <% if (search && searchResults && searchResults.length > 0) { %>
+                <div style="margin-top: 25px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <h4 style="margin-top:0; color: #0f172a;">Hasil Pencarian: "<%= search %>"</h4>
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Supplier</th>
+                                <th>Stok</th>
+                                <th>Harga</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% searchResults.forEach(item => { %>
+                                <tr>
+                                    <td class="text-highlight"><%= item.itemName %></td>
+                                    <td><%= item.supplier %></td>
+                                    <td style="font-weight: bold;"><%= item.quantity %></td>
+                                    <td style="font-weight: bold;"><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.unitPrice) %></td>
+                                    <td><a href="/items/<%= item.itemCode %>" style="color: #0284c7; text-decoration: none; font-weight: bold;">Detail →</a></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else if (search) { %>
+                <p style="margin-top: 20px; color: #dc2626; font-weight: bold;">Data tidak ditemukan.</p>
+            <% } %>
+        </section>
+
+        <div class="report-grid">
+            <div class="report-card">
+                <h3>💰 Total Nilai Aset</h3>
+                <div id="supplier-report">
+                    <p style="color: #64748b;">Memproses data...</p>
+                </div>
+            </div>
+
+            <div class="report-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin:0">⚠️ Stok Menipis</h3>
+                    <form id="threshold-form" style="display: flex; gap: 5px;">
+                        <input type="number" id="threshold" value="10" min="1" style="width: 50px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #0f172a; border-radius: 4px; padding: 2px 5px;">
+                        <button type="submit" style="font-size: 0.7rem; cursor: pointer; background: #334155; color: white; border: none; border-radius: 4px; padding: 4px 8px;">Set</button>
+                    </form>
+                </div>
+                <div id="lowstock-report">
+                    <p style="color: #64748b;">Memproses data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
+const formatIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+
 async function loadSupplierReport() {
-  const res = await fetch('/api/reports/total-value-by-supplier');
-  const data = await res.json();
-  let html = '<table border="1" cellpadding="8"><tr><th>Supplier</th><th>Total Nilai</th></tr>';
-  data.data.forEach(item => {
-    html += `<tr><td>${item._id}</td><td>${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.totalValue)}</td></tr>`;
-  });
-  html += '</table>';
-  document.getElementById('supplier-report').innerHTML = html;
+    try {
+        const res = await fetch('/api/reports/total-value-by-supplier');
+        const data = await res.json();
+        let html = '<table class="modern-table">';
+        data.data.forEach(item => {
+            html += `<tr>
+                <td style="font-weight: 600; color: #334155;">${item._id}</td>
+                <td class="text-highlight" style="text-align: right;">${formatIDR(item.totalValue)}</td>
+            </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('supplier-report').innerHTML = html;
+    } catch (e) {
+        document.getElementById('supplier-report').innerHTML = 'Gagal memuat data.';
+    }
 }
 
 async function loadLowStock(threshold) {
-  const res = await fetch(`/api/reports/low-stock?threshold=${threshold}`);
-  const data = await res.json();
-  let html = '<table border="1" cellpadding="8"><tr><th>Item</th><th>Supplier</th><th>Stok</th></tr>';
-  data.data.forEach(item => {
-    html += `<tr><td>${item.itemName}</td><td>${item.supplier}</td><td>${item.quantity}</td></tr>`;
-  });
-  html += '</table>';
-  document.getElementById('lowstock-report').innerHTML = html;
+    try {
+        const res = await fetch(`/api/reports/low-stock?threshold=${threshold}`);
+        const data = await res.json();
+        if(data.data.length === 0) {
+            document.getElementById('lowstock-report').innerHTML = '<p style="color: #16a34a; font-weight: bold;">✅ Semua stok aman!</p>';
+            return;
+        }
+        let html = '<table class="modern-table">';
+        data.data.forEach(item => {
+            html += `<tr>
+                <td><span style="font-weight: bold;">${item.itemName}</span><br><small style="color: #64748b;">${item.supplier}</small></td>
+                <td class="text-danger" style="text-align: right;">${item.quantity} PCS</td>
+            </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('lowstock-report').innerHTML = html;
+    } catch (e) {
+        document.getElementById('lowstock-report').innerHTML = 'Gagal memuat data.';
+    }
 }
 
 loadSupplierReport();
 loadLowStock(10);
 
 document.getElementById('threshold-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const threshold = document.getElementById('threshold').value;
-  loadLowStock(threshold);
+    e.preventDefault();
+    loadLowStock(document.getElementById('threshold').value);
 });
 </script>
 

@@ -1,34 +1,55 @@
 <%- include('partials/header') %>
 
-<h1><%= item ? 'Edit Item' : 'Tambah Item Baru' %></h1>
+<div class="form-container" style="max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 12px; shadow: 0 4px 6px rgba(0,0,0,0.1);">
+  
+  <h1 style="border-bottom: 2px solid #2563eb; padding-bottom: 10px; color: #1e293b;">
+    <%= item ? '👟 Edit Produk Sepatu' : '➕ Tambah Koleksi Baru' %>
+  </h1>
 
-<form action="<%= item ? '/items/' + item.itemCode + '?_method=PUT' : '/items' %>" method="POST">
-  <div>
-    <label>Nama Item:</label>
-    <input type="text" name="itemName" value="<%= item ? item.itemName : '' %>" required>
-  </div>
-  <div>
-    <label>Supplier:</label>
-    <input type="text" name="supplier" value="<%= item ? item.supplier : '' %>" required>
-  </div>
-  <div>
-    <label>Quantity:</label>
-    <input type="number" name="quantity" value="<%= item ? item.quantity : '' %>" required min="0">
-  </div>
-  <div>
-    <label>Unit Price (Rp):</label>
-    <input type="number" name="unitPrice" value="<%= item ? item.unitPrice : '' %>" required min="0">
-  </div>
-  <div>
-    <label>Deskripsi:</label>
-    <textarea name="description"><%= item ? item.description : '' %></textarea>
-  </div>
-  <div>
-    <label>Lokasi:</label>
-    <input type="text" name="location" value="<%= item ? item.location : '' %>">
-  </div>
-  <button type="submit">Simpan</button>
-  <a href="/dashboard" style="margin-left: 10px; padding: 8px 12px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Batal</a>
-</form>
+  <form action="<%= item ? '/items/' + item.itemCode + '?_method=PUT' : '/items' %>" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+    
+    <div class="input-group">
+      <label style="display: block; font-weight: bold; margin-bottom: 5px;">Nama Item:</label>
+      <input type="text" name="itemName" value="<%= item ? item.itemName : '' %>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+    </div>
+
+    <div class="input-group">
+      <label style="display: block; font-weight: bold; margin-bottom: 5px;">Supplier:</label>
+      <input type="text" name="supplier" value="<%= item ? item.supplier : '' %>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div class="input-group">
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Quantity:</label>
+        <input type="number" name="quantity" value="<%= item ? item.quantity : '' %>" required min="0" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+      </div>
+      <div class="input-group">
+        <label style="display: block; font-weight: bold; margin-bottom: 5px;">Unit Price (Rp):</label>
+        <input type="number" name="unitPrice" value="<%= item ? item.unitPrice : '' %>" required min="0" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label style="display: block; font-weight: bold; margin-bottom: 5px;">Deskripsi:</label>
+      <textarea name="description" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; height: 100px;"><%= item ? item.description : '' %></textarea>
+    </div>
+
+    <div class="input-group">
+      <label style="display: block; font-weight: bold; margin-bottom: 5px;">Lokasi Rak/Gudang:</label>
+      <input type="text" name="location" value="<%= item ? item.location : '' %>" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+    </div>
+
+    <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+      <button type="submit" style="background-color: #2563eb; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1;">
+        <%= item ? 'Update Data' : 'Simpan ke Inventory' %>
+      </button>
+
+      <a href="/dashboard" style="padding: 12px 25px; background-color: #64748b; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; text-align: center; flex: 1;">
+        Batal
+      </a>
+    </div>
+
+  </form>
+</div>
 
 <%- include('partials/footer') %>

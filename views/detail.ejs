@@ -1,50 +1,183 @@
 <%- include('partials/header') %>
 
-<h1>Detail Item</h1>
+<style>
+    /* 1. Pengaturan Background Utama */
+    .detail-page-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
+                    url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop'); 
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        font-family: 'Inter', sans-serif;
+    }
 
-<table border="1" cellpadding="8">
-  <tr>
-    <th>Item Code</th>
-    <td><%= item.itemCode %></td>
-  </tr>
-  <tr>
-    <th>Nama Item</th>
-    <td><%= item.itemName %></td>
-  </tr>
-  <tr>
-    <th>Supplier</th>
-    <td><%= item.supplier %></td>
-  </tr>
-  <tr>
-    <th>Quantity</th>
-    <td><%= item.quantity %></td>
-  </tr>
-  <tr>
-    <th>Harga</th>
-    <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.unitPrice) %></td>
-  </tr>
-  <tr>
-    <th>Deskripsi</th>
-    <td><%= item.description || '-' %></td>
-  </tr>
-  <tr>
-    <th>Lokasi</th>
-    <td><%= item.location || '-' %></td>
-  </tr>
-  <tr>
-    <th>Dibuat</th>
-    <td><%= new Date(item.createdAt).toLocaleString('id-ID') %></td>
-  </tr>
-  <tr>
-    <th>Diupdate</th>
-    <td><%= new Date(item.updatedAt).toLocaleString('id-ID') %></td>
-  </tr>
-</table>
+    /* 2. Breadcrumb Navigation */
+    .breadcrumb {
+        width: 100%;
+        max-width: 800px;
+        margin-bottom: 20px;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+    .breadcrumb a {
+        color: #38bdf8;
+        text-decoration: none;
+        font-weight: 600;
+    }
 
-<a href="/">Kembali</a>
-<a href="/items/<%= item.itemCode %>/edit">Edit</a>
-<form action="/items/<%= item.itemCode %>?_method=DELETE" method="POST" style="display:inline">
-  <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
-</form>
+    /* 3. Kartu Detail (Glassmorphism Effect) */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 800px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 4. Header dalam Kartu */
+    .card-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-header h1 {
+        color: #ffffff;
+        margin: 0;
+        font-size: 1.8rem;
+        letter-spacing: -1px;
+    }
+    .status-badge {
+        background: #38bdf8;
+        color: #0f172a;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    /* 5. Layout Tabel Modern */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        color: white;
+    }
+    .info-item {
+        margin-bottom: 15px;
+    }
+    .info-label {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    .price-tag {
+        font-size: 1.5rem;
+        color: #38bdf8;
+        font-weight: 800;
+    }
+
+    /* 6. Tombol Aksi */
+    .action-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+    }
+    .btn {
+        flex: 1;
+        padding: 14px;
+        border-radius: 12px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-back { background: #334155; color: white; }
+    .btn-edit { background: #38bdf8; color: #0f172a; }
+    .btn-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #f87171; }
+    
+    .btn:hover { transform: translateY(-3px); opacity: 0.9; }
+
+    /* Responsif */
+    @media (max-width: 600px) {
+        .info-grid { grid-template-columns: 1fr; }
+        .action-group { flex-direction: column; }
+    }
+</style>
+
+<div class="detail-page-wrapper">
+    <div class="breadcrumb">
+        <a href="/dashboard">Dashboard</a> / Detail Sepatu / <%= item.itemName %>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-header">
+            <h1><%= item.itemName %></h1>
+            <span class="status-badge">STOK: <%= item.quantity %></span>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Item Code</span>
+                <div class="info-value" style="font-family: monospace; color: #38bdf8;"><%= item.itemCode %></div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Supplier</span>
+                <div class="info-value"><%= item.supplier %></div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Harga Satuan</span>
+                <div class="price-tag">
+                    <%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.unitPrice) %>
+                </div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Lokasi Gudang</span>
+                <div class="info-value"><%= item.location || 'Area Umum' %></div>
+            </div>
+            <div class="info-item" style="grid-column: span 2;">
+                <span class="info-label">Deskripsi Produk</span>
+                <div class="info-value" style="line-height: 1.6; color: #cbd5e1;"><%= item.description || 'Tidak ada deskripsi tambahan untuk produk ini.' %></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 0.7rem; color: #64748b;">
+            <span>Input: <%= new Date(item.createdAt).toLocaleString('id-ID') %></span>
+            <span>Update: <%= new Date(item.updatedAt).toLocaleString('id-ID') %></span>
+        </div>
+
+        <div class="action-group">
+            <a href="/dashboard" class="btn btn-back">⬅ Kembali</a>
+            <a href="/items/<%= item.itemCode %>/edit" class="btn btn-edit">✏ Edit Sepatu</a>
+            <form action="/items/<%= item.itemCode %>?_method=DELETE" method="POST" style="flex: 1; display: flex;">
+                <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus sepatu ini?')">
+                    🗑 Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 
 <%- include('partials/footer') %>
